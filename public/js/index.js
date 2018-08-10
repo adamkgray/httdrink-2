@@ -250,6 +250,7 @@ const mapStateToAnswer = (state) => {
 
     // register listeners
     const nextRound = (event) => {
+        console.log(event);
         let answerTag = event.path[0]
 		let isCorrect = false;
 
