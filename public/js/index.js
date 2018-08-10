@@ -250,8 +250,6 @@ const mapStateToAnswer = (state) => {
 
     // register listeners
     const nextRound = (event) => {
-        console.log(event);
-
         let answerTag;
         if (event.path) {
             // chrome
