@@ -251,7 +251,16 @@ const mapStateToAnswer = (state) => {
     // register listeners
     const nextRound = (event) => {
         console.log(event);
-        let answerTag = event.path[0]
+
+        let answerTag;
+        if (event.path) {
+            // chrome
+            answerTag = event.path[0];
+        } else {
+            // safari
+            aswerTag = event.srcElement;
+        }
+
 		let isCorrect = false;
 
 		// update UI
