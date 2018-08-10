@@ -258,7 +258,7 @@ const mapStateToAnswer = (state) => {
             answerTag = event.path[0];
         } else {
             // safari
-            aswerTag = event.srcElement;
+            answerTag = event.srcElement;
         }
 
 		let isCorrect = false;
