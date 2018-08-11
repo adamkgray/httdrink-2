@@ -254,7 +254,7 @@ graydux.subscribe([graydux.actions.title], "titleSubscriber", (state) => {
 });
 
 // Update score
-graydux.subscribe([graydux.actions.score], "scoreSubscriber", (state) => {
+graydux.subscribe([graydux.actions.title, graydux.actions.score], "scoreSubscriber", (state) => {
     console.log("updating score");
 	document.getElementById("team-a-score").innerHTML = state.score.teamA;
 	document.getElementById("team-b-score").innerHTML = state.score.teamB;
@@ -317,7 +317,7 @@ graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
 });
 
 // Update header
-graydux.subscribe([graydux.actions.score], "headerSubscriber", (state) => {
+graydux.subscribe([graydux.actions.title, graydux.actions.score], "headerSubscriber", (state) => {
     console.log("updating header");
     if (state.isTeamATurn) {
         headerUI(document.getElementById("team-a-header"), "yellow");
