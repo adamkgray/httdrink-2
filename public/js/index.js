@@ -249,27 +249,23 @@ graydux.addReducer(graydux.actions.score, (state, action, data) => {
 
 // Update title
 graydux.subscribe([graydux.actions.title], "titleSubscriber", (state) => {
-    console.log("updating title");
     document.getElementById("title").innerHTML = state.title;
 });
 
 // Update score
 graydux.subscribe([graydux.actions.title, graydux.actions.score], "scoreSubscriber", (state) => {
-    console.log("updating score");
 	document.getElementById("team-a-score").innerHTML = state.score.teamA;
 	document.getElementById("team-b-score").innerHTML = state.score.teamB;
 });
 
 // Update question
 graydux.subscribe([graydux.actions.question], "questionSubscriber", (state) => {
-    console.log("updating question");
     document.getElementById("question").innerHTML = state.question.code;
 });
 
 
 // Update answers
 graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
-    console.log("updating answers");
     // update content
     let answers = "";
     for (let i in state.answers) {
@@ -318,7 +314,6 @@ graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
 
 // Update header
 graydux.subscribe([graydux.actions.title, graydux.actions.score], "headerSubscriber", (state) => {
-    console.log("updating header");
     if (state.isTeamATurn) {
         headerUI(document.getElementById("team-a-header"), "yellow");
         headerUI(document.getElementById("team-b-header"), "black");
