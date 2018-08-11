@@ -7,8 +7,8 @@ graydux.actions.answer = "ANSWER";
 graydux.actions.shuffle = "SHUFFLE";
 graydux.actions.score = "SCORE";
 
-// initial state
-graydux = Object.assign(graydux, {}, {
+// initialize state
+graydux.state = Object.assign(graydux.state, {}, {
 	isTeamATurn: true,
     score: {
 		teamA: 0,
@@ -111,17 +111,21 @@ const getRandomInt = (min, max) => {
 }
 
 
-// reducers
-const title = (state, action, data) => {
+// REDUCERS
+
+// TITLE reducer
+graydux.addReducer(graydux.actions.title, (state, action, data) => {
     switch (action) {
         case "TITLE":
+            graydux.enqueue(graydux.actions.title);
             return Object.assign(state, {}, { title: data });
         default:
             return state;
     }
-}
+});
 
-const answer = (state, action, data) => {
+// ANSWER reducer
+graydux.addReducer(graydux.actions.answer, (state, action, data) => {
     switch (action) {
         case "ANSWER":
             if (state.statusCodes.length < 3) {
@@ -130,6 +134,9 @@ const answer = (state, action, data) => {
                     usedStatusCodes: []
                 });
             }
+
+            graydux.enqueue(graydux.actions.answer);
+
             return Object.assign(state, {}, {
                 answers: [
                     state.statusCodes[0],
@@ -148,13 +155,17 @@ const answer = (state, action, data) => {
         default:
             return state;
     }
-}
+});
 
-const question = (state, action, data) => {
+// QUESTION reducer
+graydux.addReducer(graydux.actions.question, (state, action, data) => {
     switch (action) {
         case "QUESTION":
             let questionIndex = getRandomInt(0, 3);
             let question = state.answers[questionIndex];
+
+            graydux.enqueue(graydux.actions.question);
+
             return Object.assign(state, {}, {
                 questionIndex: questionIndex,
                 question: question
@@ -162,18 +173,21 @@ const question = (state, action, data) => {
         default:
             return state;
     }
-}
+});
 
-const shuffle = (state, action, data) => {
+// SHUFFLE reducer
+graydux.addReducer(graydux.actions.shuffle, (state, action, data) => {
     switch (action) {
         case "SHUFFLE":
+            graydux.enqueue(graydux.actions.shuffle);
             return Object.assign(state, {}, { statusCodes: shuffleArr(state.statusCodes) });
         default:
             return state;
     }
-}
+});
 
-const score = (state, action, data) => {
+// SCORE reducer
+graydux.addReducer(graydux.actions.score, (state, action, data) => {
     switch (action) {
         case "SCORE":
             // When Team A answers correctly
@@ -187,6 +201,8 @@ const score = (state, action, data) => {
                 } else {
                     newScore = state.score.teamA + 1;
                 }
+
+                graydux.enqueue(graydux.actions.score);
 
 				return Object.assign(state, {}, {
                     score: {
@@ -207,6 +223,8 @@ const score = (state, action, data) => {
                     newScore = state.score.teamB + 1;
                 }
 
+                graydux.enqueue(graydux.actions.score);
+
 				return Object.assign(state, {}, {
                     score: {
                         teamB: newScore,
@@ -216,6 +234,8 @@ const score = (state, action, data) => {
                 });
             // For all incorrect answers
             } else {
+                graydux.enqueue(graydux.actions.score);
+
                 return Object.assign(state, {}, {
                     isTeamATurn: !state.isTeamATurn
                 });
@@ -223,23 +243,33 @@ const score = (state, action, data) => {
         default:
             return state;
     }
-}
+});
 
-// subscriptions
-const mapStateToTitle = (state) => {
+// SUBSCRIPTIONS
+
+// Update title
+graydux.subscribe([graydux.actions.title], "titleSubscriber", (state) => {
+    console.log("updating title");
     document.getElementById("title").innerHTML = state.title;
-}
+});
 
-const mapStateToScore = (state) => {
+// Update score
+graydux.subscribe([graydux.actions.score], "scoreSubscriber", (state) => {
+    console.log("updating score");
 	document.getElementById("team-a-score").innerHTML = state.score.teamA;
 	document.getElementById("team-b-score").innerHTML = state.score.teamB;
-}
+});
 
-const mapStateToQuestion = (state) => {
+// Update question
+graydux.subscribe([graydux.actions.question], "questionSubscriber", (state) => {
+    console.log("updating question");
     document.getElementById("question").innerHTML = state.question.code;
-}
+});
 
-const mapStateToAnswer = (state) => {
+
+// Update answers
+graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
+    console.log("updating answers");
     // update content
     let answers = "";
     for (let i in state.answers) {
@@ -248,15 +278,14 @@ const mapStateToAnswer = (state) => {
     }
     document.getElementById("answers").innerHTML = answers;
 
-    // register listeners
+    // define onclick function
     const nextRound = (event) => {
+        // Handle browser APIs
         let answerTag;
         if (event.path) {
-            // chrome
-            answerTag = event.path[0];
+            answerTag = event.path[0]; // chrome
         } else {
-            // safari
-            answerTag = event.srcElement;
+            answerTag = event.srcElement; // safari
         }
 
 		let isCorrect = false;
@@ -280,14 +309,16 @@ const mapStateToAnswer = (state) => {
         }, 1500);
     }
 
-	// set listeners
+	// set onclick attribute for each answer
     answers = document.getElementsByClassName("answer-field");
     for (let i in answers) {
         answers[i].onclick = nextRound;
     }
-}
+});
 
-const mapStateToTeamHeaders = (state) => {
+// Update header
+graydux.subscribe([graydux.actions.score], "headerSubscriber", (state) => {
+    console.log("updating header");
     if (state.isTeamATurn) {
         headerUI(document.getElementById("team-a-header"), "yellow");
         headerUI(document.getElementById("team-b-header"), "black");
@@ -295,21 +326,7 @@ const mapStateToTeamHeaders = (state) => {
         headerUI(document.getElementById("team-b-header"), "yellow");
         headerUI(document.getElementById("team-a-header"), "black");
     }
-}
-
-// add subscriptions
-graydux.subscribers.push(mapStateToTitle);
-graydux.subscribers.push(mapStateToQuestion);
-graydux.subscribers.push(mapStateToAnswer);
-graydux.subscribers.push(mapStateToScore);
-graydux.subscribers.push(mapStateToTeamHeaders);
-
-// add reducers
-graydux.reducers.push(title);
-graydux.reducers.push(shuffle);
-graydux.reducers.push(answer);
-graydux.reducers.push(question);
-graydux.reducers.push(score);
+});
 
 // initial render
 graydux.dispatch(graydux.actions.title, "HTTDrink");
