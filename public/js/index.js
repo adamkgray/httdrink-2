@@ -1,11 +1,11 @@
 // index.js
 
-// actions
-graydux.actions.title = "TITLE";
-graydux.actions.question = "QUESTION";
-graydux.actions.answer = "ANSWER";
-graydux.actions.shuffle = "SHUFFLE";
-graydux.actions.score = "SCORE";
+// Actions
+graydux.addAction("TITLE");
+graydux.addAction("QUESTION");
+graydux.addAction("ANSWER");
+graydux.addAction("SHUFFLE");
+graydux.addAction("SCORE");
 
 // initialize state
 graydux.state = Object.assign(graydux.state, {}, {
@@ -94,7 +94,7 @@ const victoryUI = (team) => {
     window.setTimeout(() => {
         // we don't need to change the inner HTML because it will get updated. Just hide it.
         victoryTag.style.opacity = 0;
-    }, 3000);
+    }, 10000); // 10 seconds
 }
 
 
@@ -114,10 +114,10 @@ const getRandomInt = (min, max) => {
 // REDUCERS
 
 // TITLE reducer
-graydux.addReducer(graydux.actions.title, (state, action, data) => {
+graydux.addReducer(graydux.actions.TITLE, (state, action, data) => {
     switch (action) {
         case "TITLE":
-            graydux.enqueue(graydux.actions.title);
+            graydux.notify(graydux.actions.TITLE);
             return Object.assign(state, {}, { title: data });
         default:
             return state;
@@ -125,7 +125,7 @@ graydux.addReducer(graydux.actions.title, (state, action, data) => {
 });
 
 // ANSWER reducer
-graydux.addReducer(graydux.actions.answer, (state, action, data) => {
+graydux.addReducer(graydux.actions.ANSWER, (state, action, data) => {
     switch (action) {
         case "ANSWER":
             if (state.statusCodes.length < 3) {
@@ -135,7 +135,7 @@ graydux.addReducer(graydux.actions.answer, (state, action, data) => {
                 });
             }
 
-            graydux.enqueue(graydux.actions.answer);
+            graydux.notify(graydux.actions.ANSWER);
 
             return Object.assign(state, {}, {
                 answers: [
@@ -158,13 +158,13 @@ graydux.addReducer(graydux.actions.answer, (state, action, data) => {
 });
 
 // QUESTION reducer
-graydux.addReducer(graydux.actions.question, (state, action, data) => {
+graydux.addReducer(graydux.actions.QUESTION, (state, action, data) => {
     switch (action) {
         case "QUESTION":
             let questionIndex = getRandomInt(0, 3);
             let question = state.answers[questionIndex];
 
-            graydux.enqueue(graydux.actions.question);
+            graydux.notify(graydux.actions.QUESTION);
 
             return Object.assign(state, {}, {
                 questionIndex: questionIndex,
@@ -176,10 +176,10 @@ graydux.addReducer(graydux.actions.question, (state, action, data) => {
 });
 
 // SHUFFLE reducer
-graydux.addReducer(graydux.actions.shuffle, (state, action, data) => {
+graydux.addReducer(graydux.actions.SHUFFLE, (state, action, data) => {
     switch (action) {
         case "SHUFFLE":
-            graydux.enqueue(graydux.actions.shuffle);
+            graydux.notify(graydux.actions.SHUFFLE);
             return Object.assign(state, {}, { statusCodes: shuffleArr(state.statusCodes) });
         default:
             return state;
@@ -187,7 +187,7 @@ graydux.addReducer(graydux.actions.shuffle, (state, action, data) => {
 });
 
 // SCORE reducer
-graydux.addReducer(graydux.actions.score, (state, action, data) => {
+graydux.addReducer(graydux.actions.SCORE, (state, action, data) => {
     switch (action) {
         case "SCORE":
             // When Team A answers correctly
@@ -202,7 +202,7 @@ graydux.addReducer(graydux.actions.score, (state, action, data) => {
                     newScore = state.score.teamA + 1;
                 }
 
-                graydux.enqueue(graydux.actions.score);
+                graydux.notify(graydux.actions.SCORE);
 
 				return Object.assign(state, {}, {
                     score: {
@@ -223,7 +223,7 @@ graydux.addReducer(graydux.actions.score, (state, action, data) => {
                     newScore = state.score.teamB + 1;
                 }
 
-                graydux.enqueue(graydux.actions.score);
+                graydux.notify(graydux.actions.SCORE);
 
 				return Object.assign(state, {}, {
                     score: {
@@ -234,7 +234,7 @@ graydux.addReducer(graydux.actions.score, (state, action, data) => {
                 });
             // For all incorrect answers
             } else {
-                graydux.enqueue(graydux.actions.score);
+                graydux.notify(graydux.actions.SCORE);
 
                 return Object.assign(state, {}, {
                     isTeamATurn: !state.isTeamATurn
@@ -248,24 +248,24 @@ graydux.addReducer(graydux.actions.score, (state, action, data) => {
 // SUBSCRIPTIONS
 
 // Update title
-graydux.subscribe([graydux.actions.title], "titleSubscriber", (state) => {
+graydux.subscribe([graydux.actions.TITLE], "titleSubscriber", (state) => {
     document.getElementById("title").innerHTML = state.title;
 });
 
 // Update score
-graydux.subscribe([graydux.actions.title, graydux.actions.score], "scoreSubscriber", (state) => {
+graydux.subscribe([graydux.actions.TITLE, graydux.actions.SCORE], "scoreSubscriber", (state) => {
 	document.getElementById("team-a-score").innerHTML = state.score.teamA;
 	document.getElementById("team-b-score").innerHTML = state.score.teamB;
 });
 
 // Update question
-graydux.subscribe([graydux.actions.question], "questionSubscriber", (state) => {
+graydux.subscribe([graydux.actions.QUESTION], "questionSubscriber", (state) => {
     document.getElementById("question").innerHTML = state.question.code;
 });
 
 
 // Update answers
-graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
+graydux.subscribe([graydux.actions.ANSWER], "answerSubscriber", (state) => {
     // update content
     let answers = "";
     for (let i in state.answers) {
@@ -296,9 +296,9 @@ graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
 
         // this order is important, since the question is pulled from the answers
         window.setTimeout(() => {
-            graydux.dispatch(graydux.actions.answer, {});
-            graydux.dispatch(graydux.actions.question, {});
-			graydux.dispatch(graydux.actions.score, {
+            graydux.dispatch(graydux.actions.ANSWER, {});
+            graydux.dispatch(graydux.actions.QUESTION, {});
+			graydux.dispatch(graydux.actions.SCORE, {
 				"isTeamATurn": state.isTeamATurn,
 				"isCorrect": isCorrect
 			});
@@ -313,7 +313,7 @@ graydux.subscribe([graydux.actions.answer], "answerSubscriber", (state) => {
 });
 
 // Update header
-graydux.subscribe([graydux.actions.title, graydux.actions.score], "headerSubscriber", (state) => {
+graydux.subscribe([graydux.actions.TITLE, graydux.actions.SCORE], "headerSubscriber", (state) => {
     if (state.isTeamATurn) {
         headerUI(document.getElementById("team-a-header"), "yellow");
         headerUI(document.getElementById("team-b-header"), "black");
@@ -324,7 +324,8 @@ graydux.subscribe([graydux.actions.title, graydux.actions.score], "headerSubscri
 });
 
 // initial render
-graydux.dispatch(graydux.actions.title, "HTTDrink");
-graydux.dispatch(graydux.actions.shuffle, {});
-graydux.dispatch(graydux.actions.answer, {});
-graydux.dispatch(graydux.actions.question, {});
+graydux.dispatch(graydux.actions.TITLE, "HTTDrink");
+graydux.dispatch(graydux.actions.SHUFFLE, {});
+graydux.dispatch(graydux.actions.ANSWER, {});
+graydux.dispatch(graydux.actions.QUESTION, {});
+graydux.unsubscribe("titleReducer");

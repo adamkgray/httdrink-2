@@ -20,9 +20,15 @@ h2 {
 
 h3 {
     color: white;
+    font-size: 3em;
     opacity: 0;
     transition: 0.5s;
     text-align: center;
+
+	/* rainbow gradient */
+	background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 
 ul {
