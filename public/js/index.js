@@ -1,4 +1,6 @@
 // index.js
+//
+const graydux = new Graydux();
 
 // Actions
 graydux.addAction("TITLE");
