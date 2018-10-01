@@ -78,6 +78,7 @@ const answerUI = (tag, result) => {
             console.log("correct! Updating UI for correct!");
             console.log(tag.style.backgroundColor);
             tag.style = "transition: 0.5s; background-color: #4CAF50;";
+            tag.style = "transition: 0.5s; background-color: #4CAF50;";
             console.log(tag.style.backgroundColor);
             return
         case "incorrect":
