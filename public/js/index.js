@@ -10,6 +10,7 @@ const SCORE = "score";
 const TEAM_A = "teamA";
 const TEAM_B = "teamB";
 const IS_TEAM_A_TURN = "isTeamATurn";
+const SHUFFLE = "shuffle";
 
 // initialize state
 graydux.setState([], {
