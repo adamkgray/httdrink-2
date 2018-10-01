@@ -73,11 +73,10 @@ graydux.setState([], {
 // HELPER FUNCTIONS
 
 const answerUI = (tag, isCorrect) => {
-    if (isCorrect) {
-        tag.style = "background-color: #4CAF50; transition: 0.5s";
-    } else {
-        tag.style = "transition: 0.5s; background-color: #a53a37;";
-    }
+    tag.style = "background-color: #4CAF50; transition: 0.5s";
+    //} else {
+    //    tag.style = "transition: 0.5s; background-color: #a53a37;";
+    //}
 }
 
 const victoryUI = (team) => {
