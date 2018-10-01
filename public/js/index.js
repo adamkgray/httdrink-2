@@ -193,7 +193,7 @@ const nextRound = (event) => {
 
     if (answerTag.innerText == graydux.getState([QUESTION, "value"])) {
         // Show that it was the correct answer
-        answerUI(answerTag, 1);
+        answerUI(answerTag, true);
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
             if (graydux.getState([SCORE, TEAM_A]) == 2) {
@@ -209,7 +209,7 @@ const nextRound = (event) => {
 
     } else {
         // Show that it was the incorrect answer
-        answerUI(answerTag, 0);
+        answerUI(answerTag, false);
     }
 
     // this order is important, since the question is pulled from the answers
