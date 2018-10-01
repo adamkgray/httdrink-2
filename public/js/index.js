@@ -189,7 +189,7 @@ const nextRound = (event) => {
 
     if (realAnswer == userAnswer) {
         // Show that it was the correct answer
-        answerTag.style.backgroundColor = "#4CAF50;"
+        answerTag.style = "background-color: #4CAF50;"
 
         if (isTeamATurn && graydux.getState([SCORE, TEAM_A]) == 2) {
                 victoryUI(TEAM_A);
@@ -198,7 +198,7 @@ const nextRound = (event) => {
         }
     } else {
         // Show that it was the incorrect answer
-        answerTag.style.backgroundColor = "#a53a37;";
+        answerTag.style = "background-color: #a53a37;";
     }
 
     // this order is important, since the question is pulled from the answers
