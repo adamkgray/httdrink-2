@@ -75,6 +75,7 @@ graydux.setState([], {
 const answerUI = (tag, result) => {
     switch (result) {
         case "correct":
+            console.log("correct! Updating UI for correct!");
             tag.style = "transition: 0.5s; background-color: #4CAF50;";
             return
         case "incorrect":
@@ -200,6 +201,7 @@ const nextRound = (event) => {
 
     if (answerTag.innerText == graydux.getState([QUESTION, "value"])) {
         // Show that it was the correct answer
+        console.log("That's correct!");
         answerUI(answerTag, "correct");
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
