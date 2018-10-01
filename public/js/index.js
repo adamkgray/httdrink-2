@@ -196,6 +196,8 @@ const nextRound = (event) => {
         answerTag = event.srcElement; // safari
     }
 
+    console.log(answerTag.innerText);
+
     if (answerTag.innerText == graydux.getState([QUESTION, "value"])) {
         // Show that it was the correct answer
         answerUI(answerTag, "correct");
