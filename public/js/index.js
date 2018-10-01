@@ -72,9 +72,12 @@ graydux.setState([], {
 
 // HELPER FUNCTIONS
 
-const answerUI = (tag, result) => {
-    tag.style = "background-color: #4CAF50; transition: 0.5s";
-    //tag.style = "transition: 0.5s; background-color: #a53a37;";
+const answerUI = (tag, isCorrect) => {
+    if (isCorrect) {
+        tag.style = "background-color: #4CAF50; transition: 0.5s";
+    } else {
+        tag.style = "transition: 0.5s; background-color: #a53a37;";
+    }
 }
 
 const victoryUI = (team) => {
@@ -190,7 +193,7 @@ const nextRound = (event) => {
 
     if (answerTag.innerText == graydux.getState([QUESTION, "value"])) {
         // Show that it was the correct answer
-        answerUI(answerTag, "correct");
+        answerUI(answerTag, 1);
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
             if (graydux.getState([SCORE, TEAM_A]) == 2) {
@@ -206,7 +209,7 @@ const nextRound = (event) => {
 
     } else {
         // Show that it was the incorrect answer
-        answerUI(answerTag, "incorrect");
+        answerUI(answerTag, 0);
     }
 
     // this order is important, since the question is pulled from the answers
