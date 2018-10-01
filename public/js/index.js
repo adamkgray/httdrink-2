@@ -130,6 +130,7 @@ graydux.addReducer(TITLE, [TITLE], [TITLE], (state, action, value) => {
 graydux.addReducer(ANSWERS, [STATUS_CODES], [ANSWERS], (state, action, value) => {
     switch (action) {
         case ANSWERS:
+            console.log(state.slice(0, 4));
             return state.slice(0, 4);
         default:
             return state;
