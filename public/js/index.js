@@ -1,25 +1,31 @@
 // index.js
-//
+
 const graydux = new Graydux();
 
-// Actions
-graydux.addAction("TITLE");
-graydux.addAction("QUESTION");
-graydux.addAction("ANSWER");
-graydux.addAction("SHUFFLE");
-graydux.addAction("SCORE");
+const TITLE = "title";
+const ANSWERS = "answers";
+const QUESTION = "question";
+const STATUS_CODES = "statusCodes";
+const SCORE = "score";
+const TEAM_A = "teamA";
+const TEAM_B = "teamB";
+const IS_TEAM_A_TURN = "isTeamATurn";
+const SHUFFLE = "shuffle";
 
 // initialize state
-graydux.state = Object.assign(graydux.state, {}, {
+graydux.setState([], {
+    title: "",
 	isTeamATurn: true,
     score: {
 		teamA: 0,
 		teamB: 0
 	},
-    question: { code: 0, value: ""},
-    questionIndex: 0,
+    question: {
+        code: 0,
+        value: "",
+        index: 0
+    },
     answers: [],
-    usedStatusCodes: [],
     statusCodes: [
 		{ code: 100, value: "Continue" },
 		{ code: 101, value: "Switching Protocols" },
@@ -64,30 +70,14 @@ graydux.state = Object.assign(graydux.state, {}, {
     ]
 });
 
-// helper functions
-const answerUI = (tag, result) => {
-    switch (result) {
-        case "correct":
-            tag.style = "transition: 0.5s; background-color: #4CAF50;";
-            return
-        case "incorrect":
-            tag.style = "transition: 0.5s; background-color: #a53a37;";
-            return
-        default:
-            return
-    }
-}
-
-const headerUI = (tag, color) => {
-    tag.style.color = color;
-}
+// HELPER FUNCTIONS
 
 const victoryUI = (team) => {
     let victoryTag = document.getElementById("victory");
 
-    if (team == "teamA") {
+    if (team == TEAM_A) {
         victoryTag.innerHTML = "Team A Victory";
-    } else if (team == "teamB") {
+    } else if (team == TEAM_B) {
         victoryTag.innerHTML = "Team B Victory";
     }
 
@@ -100,7 +90,7 @@ const victoryUI = (team) => {
 }
 
 
-const shuffleArr = (a) => {
+const shuffle = (a) => {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -115,197 +105,144 @@ const getRandomInt = (min, max) => {
 
 // REDUCERS
 
-// TITLE reducer
-graydux.addReducer(graydux.actions.TITLE, (state, action, data) => {
+graydux.addReducer(TITLE, [TITLE], (state, action, value) => {
     switch (action) {
-        case "TITLE":
-            graydux.notify(graydux.actions.TITLE);
-            return Object.assign(state, {}, { title: data });
+        case TITLE:
+            return value;
         default:
             return state;
     }
 });
 
-// ANSWER reducer
-graydux.addReducer(graydux.actions.ANSWER, (state, action, data) => {
+graydux.addReducer(ANSWERS, [ANSWERS], (state, action, value) => {
     switch (action) {
-        case "ANSWER":
-            if (state.statusCodes.length < 3) {
-                state =  Object.assign(state, {}, {
-                    statusCodes: shuffleArr(state.usedStatusCodes.concat(state.statusCodes)),
-                    usedStatusCodes: []
-                });
+        case ANSWERS:
+            return graydux.getState([STATUS_CODES]).slice(0, 4);
+        default:
+            return state;
+    }
+});
+
+graydux.addReducer(QUESTION, [QUESTION], (state, action, value) => {
+    switch (action) {
+        case QUESTION:
+            const question = graydux.getState([ANSWERS])[getRandomInt(0, 3)];
+            return {
+                code: question.code,
+                value: question.value,
             }
-
-            graydux.notify(graydux.actions.ANSWER);
-
-            return Object.assign(state, {}, {
-                answers: [
-                    state.statusCodes[0],
-                    state.statusCodes[1],
-                    state.statusCodes[2],
-                    state.statusCodes[3]
-                ],
-                usedStatusCodes: state.usedStatusCodes.concat([
-                    state.statusCodes[0],
-                    state.statusCodes[1],
-                    state.statusCodes[2],
-                    state.statusCodes[3]
-                ]),
-                statusCodes: state.statusCodes.slice(4)
-            })
         default:
             return state;
     }
 });
 
-// QUESTION reducer
-graydux.addReducer(graydux.actions.QUESTION, (state, action, data) => {
+graydux.addReducer(SHUFFLE, [STATUS_CODES], (state, action, value) => {
     switch (action) {
-        case "QUESTION":
-            let questionIndex = getRandomInt(0, 3);
-            let question = state.answers[questionIndex];
-
-            graydux.notify(graydux.actions.QUESTION);
-
-            return Object.assign(state, {}, {
-                questionIndex: questionIndex,
-                question: question
-            });
+        case SHUFFLE:
+            return shuffle(state);
         default:
             return state;
     }
 });
 
-// SHUFFLE reducer
-graydux.addReducer(graydux.actions.SHUFFLE, (state, action, data) => {
+graydux.addReducer(TEAM_A, [SCORE, TEAM_A], (state, action, value) => {
     switch (action) {
-        case "SHUFFLE":
-            graydux.notify(graydux.actions.SHUFFLE);
-            return Object.assign(state, {}, { statusCodes: shuffleArr(state.statusCodes) });
+        case TEAM_A:
+            return (state == 2) ? 0 : state + 1;
         default:
             return state;
     }
 });
 
-// SCORE reducer
-graydux.addReducer(graydux.actions.SCORE, (state, action, data) => {
+graydux.addReducer(TEAM_B, [SCORE, TEAM_B], (state, action, value) => {
     switch (action) {
-        case "SCORE":
-            // When Team A answers correctly
-			if (data.isTeamATurn && data.isCorrect) {
+        case TEAM_B:
+            return (state == 2) ? 0 : state + 1;
+        default:
+            return state;
+    }
+});
 
-                // return to 0 after 3
-                let newScore;
-                if (state.score.teamA == 2) {
-                    victoryUI("teamA");
-                    newScore = 0;
-                } else {
-                    newScore = state.score.teamA + 1;
-                }
+graydux.addReducer(IS_TEAM_A_TURN, [IS_TEAM_A_TURN], (state, action, value) => {
+    switch (action) {
+        case IS_TEAM_A_TURN:
+            return !state;
+        default:
+            return state;
+    }
+});
 
-                graydux.notify(graydux.actions.SCORE);
+// NEXT ROUND LOGIC
 
-				return Object.assign(state, {}, {
-                    score: {
-                        teamA: newScore,
-                        teamB: state.score.teamB
-                    },
-                    isTeamATurn: !state.isTeamATurn
-                });
-            // When Team B answers correctly
-            } else if (data.isCorrect) {
+const nextRound = (event) => {
+    // Handle browser APIs
+    let answerTag;
+    if (event.path) {
+        answerTag = event.path[0]; // chrome
+    } else {
+        answerTag = event.srcElement; // safari
+    }
 
-                // return to 0 after 3
-                let newScore;
-                if (state.score.teamB == 2) {
-                    victoryUI("teamB");
-                    newScore = 0;
-                } else {
-                    newScore = state.score.teamB + 1;
-                }
+    const realAnswer = graydux.getState([QUESTION, "value"]);
+    const userAnswer = answerTag.innerText;
+    const isTeamATurn = graydux.getState([IS_TEAM_A_TURN]);
 
-                graydux.notify(graydux.actions.SCORE);
+    if (realAnswer == userAnswer) {
+        // Show that it was the correct answer
+        answerTag.style = "background-color: #4CAF50;"
 
-				return Object.assign(state, {}, {
-                    score: {
-                        teamB: newScore,
-                        teamA: state.score.teamA
-                    },
-                    isTeamATurn: !state.isTeamATurn
-                });
-            // For all incorrect answers
+        if (isTeamATurn && graydux.getState([SCORE, TEAM_A]) == 2) {
+                victoryUI(TEAM_A);
+        } else if (graydux.getState([SCORE, TEAM_B]) == 2) {
+                victoryUI(TEAM_B);
+        }
+    } else {
+        // Show that it was the incorrect answer
+        answerTag.style = "background-color: #a53a37;";
+    }
+
+    // this order is important, since the question is pulled from the answers
+    window.setTimeout(() => {
+        if (realAnswer == userAnswer) {
+            if (isTeamATurn) {
+                graydux.dispatch(TEAM_A, {});
             } else {
-                graydux.notify(graydux.actions.SCORE);
-
-                return Object.assign(state, {}, {
-                    isTeamATurn: !state.isTeamATurn
-                });
+                graydux.dispatch(TEAM_B, {});
             }
-        default:
-            return state;
-    }
-});
+        }
+        graydux.dispatch(IS_TEAM_A_TURN, {});
+        graydux.dispatch(SHUFFLE, {});
+        graydux.dispatch(ANSWERS, {});
+        graydux.dispatch(QUESTION, {});
+    }, 1500);
+}
 
 // SUBSCRIPTIONS
 
-// Update title
-graydux.subscribe([graydux.actions.TITLE], "titleSubscriber", (state) => {
-    document.getElementById("title").innerHTML = state.title;
+graydux.subscribe(TITLE, (state) => {
+    document.getElementById(TITLE).innerHTML = state;
 });
 
-// Update score
-graydux.subscribe([graydux.actions.TITLE, graydux.actions.SCORE], "scoreSubscriber", (state) => {
-	document.getElementById("team-a-score").innerHTML = state.score.teamA;
-	document.getElementById("team-b-score").innerHTML = state.score.teamB;
+graydux.subscribe(TEAM_A, (state) => {
+	document.getElementById("team-a-score").innerHTML = state;
 });
 
-// Update question
-graydux.subscribe([graydux.actions.QUESTION], "questionSubscriber", (state) => {
-    document.getElementById("question").innerHTML = state.question.code;
+graydux.subscribe(TEAM_B, (state) => {
+	document.getElementById("team-b-score").innerHTML = state;
 });
 
+graydux.subscribe(QUESTION, (state) => {
+    document.getElementById(QUESTION).innerHTML = state.code;
+});
 
-// Update answers
-graydux.subscribe([graydux.actions.ANSWER], "answerSubscriber", (state) => {
+graydux.subscribe(ANSWERS, (state) => {
     // update content
     let answers = "";
-    for (let i in state.answers) {
-        let value = state.answers[i].value;
+    for (let i in state) {
+        let value = state[i].value;
         answers += "<li><button class='answer-field'>" + value + "</button></li>";
     }
-    document.getElementById("answers").innerHTML = answers;
-
-    // define onclick function
-    const nextRound = (event) => {
-        // Handle browser APIs
-        let answerTag;
-        if (event.path) {
-            answerTag = event.path[0]; // chrome
-        } else {
-            answerTag = event.srcElement; // safari
-        }
-
-		let isCorrect = false;
-
-		// update UI
-        if (state.question.value == answerTag.innerText) {
-            answerUI(answerTag, "correct");
-			isCorrect = true;
-        } else {
-            answerUI(answerTag, "incorrect");
-        }
-
-        // this order is important, since the question is pulled from the answers
-        window.setTimeout(() => {
-            graydux.dispatch(graydux.actions.ANSWER, {});
-            graydux.dispatch(graydux.actions.QUESTION, {});
-			graydux.dispatch(graydux.actions.SCORE, {
-				"isTeamATurn": state.isTeamATurn,
-				"isCorrect": isCorrect
-			});
-        }, 1500);
-    }
+    document.getElementById(ANSWERS).innerHTML = answers;
 
 	// set onclick attribute for each answer
     answers = document.getElementsByClassName("answer-field");
@@ -314,20 +251,18 @@ graydux.subscribe([graydux.actions.ANSWER], "answerSubscriber", (state) => {
     }
 });
 
-// Update header
-graydux.subscribe([graydux.actions.TITLE, graydux.actions.SCORE], "headerSubscriber", (state) => {
-    if (state.isTeamATurn) {
-        headerUI(document.getElementById("team-a-header"), "yellow");
-        headerUI(document.getElementById("team-b-header"), "black");
+graydux.subscribe(IS_TEAM_A_TURN, (state) => {
+    if (state) {
+        document.getElementById("team-a-header").style.color = "yellow";
+        document.getElementById("team-b-header").style.color = "black";
     } else {
-        headerUI(document.getElementById("team-b-header"), "yellow");
-        headerUI(document.getElementById("team-a-header"), "black");
+        document.getElementById("team-a-header").style.color = "black";
+        document.getElementById("team-b-header").style.color = "yellow";
     }
 });
 
 // initial render
-graydux.dispatch(graydux.actions.TITLE, "HTTDrink");
-graydux.dispatch(graydux.actions.SHUFFLE, {});
-graydux.dispatch(graydux.actions.ANSWER, {});
-graydux.dispatch(graydux.actions.QUESTION, {});
-graydux.unsubscribe("titleReducer");
+graydux.dispatch(TITLE, "HTTDrink");
+graydux.dispatch(SHUFFLE, {});
+graydux.dispatch(ANSWERS, {});
+graydux.dispatch(QUESTION, {});
