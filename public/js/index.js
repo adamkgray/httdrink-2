@@ -75,7 +75,7 @@ graydux.setState([], {
 const answerUI = (tag, result) => {
     switch (result) {
         case "correct":
-            tag.style = "background-color: #4CAF50;";
+            tag.style = "background-color: #4CAF50; transition: 0.5s";
             return
         case "incorrect":
             tag.style = "transition: 0.5s; background-color: #a53a37;";
