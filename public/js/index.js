@@ -189,7 +189,6 @@ const nextRound = (event) => {
 
     if (realAnswer == userAnswer) {
         // Show that it was the correct answer
-        answerTag.style.transition = "0.5s"
         answerTag.style.backgroundColor = "#4CAF50;"
 
         if (isTeamATurn && graydux.getState([SCORE, TEAM_A]) == 2) {
@@ -199,7 +198,6 @@ const nextRound = (event) => {
         }
     } else {
         // Show that it was the incorrect answer
-        answerTag.style.transition = "0.5s"
         answerTag.style.backgroundColor = "#a53a37;";
     }
 
