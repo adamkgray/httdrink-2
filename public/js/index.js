@@ -192,7 +192,7 @@ const nextRound = (event) => {
 
     if (answer == answerTag.innerText) {
         // Show that it was the correct answer
-        answerTag.style = "background-color: #4CAF50; transition: 0.5s";
+        answerTag.style = "background-color: #4CAF50;"
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
             if (graydux.getState([SCORE, TEAM_A]) == 2) {
