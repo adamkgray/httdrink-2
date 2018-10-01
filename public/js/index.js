@@ -189,7 +189,9 @@ const nextRound = (event) => {
 
     if (realAnswer == userAnswer) {
         // Show that it was the correct answer
-        answerTag.style += "background-color: #4CAF50;"
+        answerTag.style.transition = "0.5s"
+        answerTag.style.backgroundColor = "#4CAF50;"
+
         if (isTeamATurn && graydux.getState([SCORE, TEAM_A]) == 2) {
                 victoryUI(TEAM_A);
         } else if (graydux.getState([SCORE, TEAM_B]) == 2) {
@@ -197,7 +199,8 @@ const nextRound = (event) => {
         }
     } else {
         // Show that it was the incorrect answer
-        answerTag.style += "background-color: #a53a37;";
+        answerTag.style.transition = "0.5s"
+        answerTag.style.backgroundColor = "#a53a37;";
     }
 
     // this order is important, since the question is pulled from the answers
@@ -247,7 +250,6 @@ graydux.subscribe(ANSWERS, (state) => {
     answers = document.getElementsByClassName("answer-field");
     for (let i in answers) {
         answers[i].onclick = nextRound;
-        answers[i].style = "transition: 0.5s;";
     }
 });
 
