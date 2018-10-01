@@ -73,9 +73,7 @@ graydux.setState([], {
 // HELPER FUNCTIONS
 
 const answerUI = (tag, isCorrect) => {
-    tag.style = "background-color: #4CAF50; transition: 0.5s";
     //} else {
-    //    tag.style = "transition: 0.5s; background-color: #a53a37;";
     //}
 }
 
@@ -190,9 +188,11 @@ const nextRound = (event) => {
         answerTag = event.srcElement; // safari
     }
 
-    if (answerTag.innerText == graydux.getState([QUESTION, "value"])) {
+    const answer = graydux.getState([QUESTION, "value"]);
+
+    if (answer == answerTag.innerText) {
         // Show that it was the correct answer
-        answerUI(answerTag, true);
+        answerTag.style = "background-color: #4CAF50; transition: 0.5s";
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
             if (graydux.getState([SCORE, TEAM_A]) == 2) {
@@ -208,7 +208,7 @@ const nextRound = (event) => {
 
     } else {
         // Show that it was the incorrect answer
-        answerUI(answerTag, false);
+        answerTag.style = "transition: 0.5s; background-color: #a53a37;";
     }
 
     // this order is important, since the question is pulled from the answers
