@@ -76,7 +76,9 @@ const answerUI = (tag, result) => {
     switch (result) {
         case "correct":
             console.log("correct! Updating UI for correct!");
+            console.log(tag.style);
             tag.style = "transition: 0.5s; background-color: #4CAF50;";
+            console.log(tag.style);
             return
         case "incorrect":
             tag.style = "transition: 0.5s; background-color: #a53a37;";
@@ -89,9 +91,9 @@ const answerUI = (tag, result) => {
 const victoryUI = (team) => {
     let victoryTag = document.getElementById("victory");
 
-    if (team == "teamA") {
+    if (team == TEAM_A) {
         victoryTag.innerHTML = "Team A Victory";
-    } else if (team == "teamB") {
+    } else if (team == TEAM_B) {
         victoryTag.innerHTML = "Team B Victory";
     }
 
@@ -205,13 +207,13 @@ const nextRound = (event) => {
         answerUI(answerTag, "correct");
 
         if (graydux.getState([IS_TEAM_A_TURN])) {
-            if (graydux.getState(["score", "teamA"]) == 2) {
-                victoryUI("teamA");
+            if (graydux.getState([SCORE, TEAM_A]) == 2) {
+                victoryUI(TEAM_A);
             }
             graydux.dispatch(TEAM_A, {});
         } else {
-            if (graydux.getState(["score", "teamB"]) == 2) {
-                victoryUI("teamB");
+            if (graydux.getState([SCORE, TEAM_B]) == 2) {
+                victoryUI(TEAM_B);
             }
             graydux.dispatch(TEAM_B, {});
         }
