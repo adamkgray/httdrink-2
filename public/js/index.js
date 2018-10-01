@@ -72,11 +72,6 @@ graydux.setState([], {
 
 // HELPER FUNCTIONS
 
-const answerUI = (tag, isCorrect) => {
-    //} else {
-    //}
-}
-
 const victoryUI = (team) => {
     let victoryTag = document.getElementById("victory");
 
@@ -199,12 +194,12 @@ const nextRound = (event) => {
             if (graydux.getState([SCORE, TEAM_A]) == 2) {
                 victoryUI(TEAM_A);
             }
-            graydux.dispatch(TEAM_A, {});
+            //graydux.dispatch(TEAM_A, {});
         } else {
             if (graydux.getState([SCORE, TEAM_B]) == 2) {
                 victoryUI(TEAM_B);
             }
-            graydux.dispatch(TEAM_B, {});
+            //graydux.dispatch(TEAM_B, {});
         }
 
     } else {
