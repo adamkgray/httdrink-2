@@ -183,25 +183,18 @@ const nextRound = (event) => {
         answerTag = event.srcElement; // safari
     }
 
-    const answer = graydux.getState([QUESTION, "value"]);
+    const realAnswer = graydux.getState([QUESTION, "value"]);
+    const userAnswer = answerTag.innerText;
+    const isTeamATurn = graydux.getState([IS_TEAM_A_TURN]);
 
-    if (answer == answerTag.innerText) {
+    if (realAnswer == userAnswer) {
         // Show that it was the correct answer
-        console.log("Correct!");
-        answerTag.style = "background-color: #4CAF50;"
-
-        if (graydux.getState([IS_TEAM_A_TURN])) {
-            if (graydux.getState([SCORE, TEAM_A]) == 2) {
+        answerTag.style = "transition 0.5s; background-color: #4CAF50;"
+        if (isTeamATurn && graydux.getState([SCORE, TEAM_A]) == 2) {
                 victoryUI(TEAM_A);
-            }
-            //graydux.dispatch(TEAM_A, {});
-        } else {
-            if (graydux.getState([SCORE, TEAM_B]) == 2) {
+        } else if (graydux.getState([SCORE, TEAM_B]) == 2) {
                 victoryUI(TEAM_B);
-            }
-            //graydux.dispatch(TEAM_B, {});
         }
-
     } else {
         // Show that it was the incorrect answer
         answerTag.style = "transition: 0.5s; background-color: #a53a37;";
@@ -209,6 +202,13 @@ const nextRound = (event) => {
 
     // this order is important, since the question is pulled from the answers
     window.setTimeout(() => {
+        if (realAnswer == userAnswer) {
+            if (isTeamATurn) {
+                graydux.dispatch(TEAM_A, {});
+            } else {
+                graydux.dispatch(TEAM_B, {});
+            }
+        }
         graydux.dispatch(IS_TEAM_A_TURN, {});
         graydux.dispatch(SHUFFLE, {});
         graydux.dispatch(ANSWERS, {});
