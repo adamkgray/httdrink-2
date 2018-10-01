@@ -220,6 +220,7 @@ const nextRound = (event) => {
     // this order is important, since the question is pulled from the answers
     window.setTimeout(() => {
         graydux.dispatch(IS_TEAM_A_TURN, {});
+        graydux.dispatch(SHUFFLE, {});
         graydux.dispatch(ANSWERS, {});
         graydux.dispatch(QUESTION, {});
     }, 1500);
@@ -259,7 +260,6 @@ graydux.subscribe(ANSWERS, (state) => {
     }
 });
 
-// Update header
 graydux.subscribe(IS_TEAM_A_TURN, (state) => {
     if (state) {
         document.getElementById("team-a-header").style.color = "yellow";
