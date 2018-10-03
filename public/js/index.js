@@ -105,28 +105,28 @@ const getRandomInt = (min, max) => {
 
 // REDUCERS
 
-graydux.addReducer(TITLE, [TITLE], (state, action, value) => {
+graydux.addReducer(TITLE, [TITLE], (state, action, data) => {
     switch (action) {
         case TITLE:
-            return value;
+            return data;
         default:
             return state;
     }
 });
 
-graydux.addReducer(ANSWERS, [ANSWERS], (state, action, value) => {
+graydux.addReducer(ANSWERS, [ANSWERS], (state, action, data) => {
     switch (action) {
         case ANSWERS:
-            return graydux.getState([STATUS_CODES]).slice(0, 4);
+            return data.slice(0, 4);
         default:
             return state;
     }
 });
 
-graydux.addReducer(QUESTION, [QUESTION], (state, action, value) => {
+graydux.addReducer(QUESTION, [QUESTION], (state, action, data) => {
     switch (action) {
         case QUESTION:
-            const question = graydux.getState([ANSWERS])[getRandomInt(0, 3)];
+            const question = data[getRandomInt(0, 3)];
             return {
                 code: question.code,
                 value: question.value,
@@ -136,7 +136,7 @@ graydux.addReducer(QUESTION, [QUESTION], (state, action, value) => {
     }
 });
 
-graydux.addReducer(SHUFFLE, [STATUS_CODES], (state, action, value) => {
+graydux.addReducer(SHUFFLE, [STATUS_CODES], (state, action, data) => {
     switch (action) {
         case SHUFFLE:
             return shuffle(state);
@@ -145,7 +145,7 @@ graydux.addReducer(SHUFFLE, [STATUS_CODES], (state, action, value) => {
     }
 });
 
-graydux.addReducer(TEAM_A, [SCORE, TEAM_A], (state, action, value) => {
+graydux.addReducer(TEAM_A, [SCORE, TEAM_A], (state, action, data) => {
     switch (action) {
         case TEAM_A:
             return (state == 2) ? 0 : state + 1;
@@ -154,7 +154,7 @@ graydux.addReducer(TEAM_A, [SCORE, TEAM_A], (state, action, value) => {
     }
 });
 
-graydux.addReducer(TEAM_B, [SCORE, TEAM_B], (state, action, value) => {
+graydux.addReducer(TEAM_B, [SCORE, TEAM_B], (state, action, data) => {
     switch (action) {
         case TEAM_B:
             return (state == 2) ? 0 : state + 1;
@@ -163,7 +163,7 @@ graydux.addReducer(TEAM_B, [SCORE, TEAM_B], (state, action, value) => {
     }
 });
 
-graydux.addReducer(IS_TEAM_A_TURN, [IS_TEAM_A_TURN], (state, action, value) => {
+graydux.addReducer(IS_TEAM_A_TURN, [IS_TEAM_A_TURN], (state, action, data) => {
     switch (action) {
         case IS_TEAM_A_TURN:
             return !state;
@@ -212,8 +212,8 @@ const nextRound = (event) => {
         }
         graydux.dispatch(IS_TEAM_A_TURN, {});
         graydux.dispatch(SHUFFLE, {});
-        graydux.dispatch(ANSWERS, {});
-        graydux.dispatch(QUESTION, {});
+        graydux.dispatch(ANSWERS, graydux.getState([STATUS_CODES]));
+        graydux.dispatch(QUESTION, graydux.getState([ANSWERS]));
     }, 1500);
 }
 
@@ -264,5 +264,5 @@ graydux.subscribe(IS_TEAM_A_TURN, (state) => {
 // initial render
 graydux.dispatch(TITLE, "HTTDrink");
 graydux.dispatch(SHUFFLE, {});
-graydux.dispatch(ANSWERS, {});
-graydux.dispatch(QUESTION, {});
+graydux.dispatch(ANSWERS, graydux.getState([STATUS_CODES]));
+graydux.dispatch(QUESTION, graydux.getState([ANSWERS]));
