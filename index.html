@@ -27,6 +27,7 @@
         color: white;
         font-size: 3em;
         opacity: 0;
+        display: none;
         transition: 0.5s;
         text-align: center;
 
@@ -190,11 +191,13 @@
         }
 
         victoryTag.style.opacity = 1;
+        victoryTag.style.display = "block";
 
         window.setTimeout(() => {
             // we don't need to change the inner HTML because it will get updated. Just hide it.
             victoryTag.style.opacity = 0;
-        }, 10000); // 10 seconds
+            victoryTag.style.display = "none";
+        }, 7000); // 7 seconds
     }
 
 
@@ -283,6 +286,13 @@
     // NEXT ROUND LOGIC
 
     const nextRound = (event) => {
+        // disable all buttons
+        let answers = document.getElementById("answers").childNodes;
+        for (let i in answers) {
+            if (answers[i].childNodes && answers[i].childNodes.length > 0) {
+                answers[i].childNodes[0].disabled = "true";
+            }
+        }
         // Handle browser APIs
         let answerTag;
         if (event.path) {
